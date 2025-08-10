@@ -38,6 +38,10 @@ import StoryAIPage from './pages/StoryAIPage';
 import PoemGenPage from './pages/PoemGenPage';
 import FunZonePage from './pages/FunZonePage';
 import StoryPage from './pages/StoryPage';
+import CodingProjectsPage from './pages/CodingProjects'
+import CodingAlgorithmsPage from './pages/CodingAlgorithms'
+import Store from './pages/Store';
+import CssLibrary from './pages/CssLibrary'
 
 function App() {
   const [aiOpen, setAiOpen] = React.useState(false);
@@ -64,6 +68,8 @@ function App() {
               <Route path="/learn/cubing/pyraminx/how-to-solve" element={<HowToSolvePyraminxPage />} />
               <Route path="/learn/cubing/3x3/:level" element={<ProtectedRoute><ThreeByThreeLevelPage /></ProtectedRoute>} />
               <Route path="/learn/coding" element={<ProtectedRoute><CodingLearnPage /></ProtectedRoute>} />
+              <Route path="/learn/coding/projects" element={<ProtectedRoute><CodingProjectsPage /></ProtectedRoute>} />
+              <Route path="/learn/coding/algorithms" element={<ProtectedRoute><CodingAlgorithmsPage /></ProtectedRoute>} />
               <Route path="/learn/chess" element={<ProtectedRoute><ChessLearnPage /></ProtectedRoute>} />
               <Route path="/learn/cbse10" element={<ProtectedRoute><CBSE10Page /></ProtectedRoute>} />
               <Route path="/play-chess" element={<ProtectedRoute><ChessSimPage /></ProtectedRoute>} />
@@ -103,6 +109,8 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/story-ai" element={<StoryAIPage />} />
+              <Route path="/store" element={<Store />} />
+              <Route path='/css-library' element={<CssLibrary />} />
               {/* Add other routes like Timer, etc. later */}
             </Routes>
           </main>

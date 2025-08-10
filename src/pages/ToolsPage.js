@@ -44,7 +44,7 @@ const tools = [
 const ToolsPage = () => {
   return (
     <div style={bgStyle}>
-      <h1 style={headingStyle}>All Tools</h1>
+      <h1 style={headingStyle}>More...</h1>
       <div style={gridStyle}>
         {tools.map(tool => (
           <Link to={tool.to} style={toolCardStyle} key={tool.to}

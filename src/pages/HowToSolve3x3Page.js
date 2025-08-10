@@ -1,219 +1,412 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import whiteCrossImg from '../assets/images/face-moves.png';
-import f2lImg from '../assets/images/basic-f2l.png';
-import ollImg from '../assets/images/basic-oll.png';
-import pllImg from '../assets/images/basic-pll.png';
+// howtosolve3x3.jsx
+import React, { useState } from 'react';
+import NotationImages from '../assets/images/face-moves.png';
+
+const notationImages = {
+  AllMoves: NotationImages,
+};
 
 const HowToSolve3x3Page = () => {
-  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [cubeState, setCubeState] = useState(initializeSolvedCube());
+
+  const solvingSteps = [
+    {
+      title: "Solve the White Edge Pieces in the First Layer",
+      description: "The easiest step is solving the first layer edges of the Rubik's Cube. Choose one color you want to start with. In this beginner's tutorial we're going to start with the white face. I suggest you try to solve the first face without reading these instructions, so you can feel the sense of accomplishment when you complete it all alone. This step is not so hard because you don't have to take care of so many solved cubelets yet. You can determine where a piece comes according to the colour of the center pieces which never swap places. Every edge must fit to the side center piece too. See the attached image.",
+      algorithm: "Flipped Edge Algorithm - F U' R U",
+      image: "https://ruwix.com/pics/solution/1.svg"
+    },
+    {
+      title: "Solve the White Corners in the First Layer",
+      description: "The next step is to solve the white corners. You can determine where a corner comes according to the colour of the center pieces which never swap places. Every corner must fit to the side center piece too. See the attached image.",
+      algorithm: "Corner Rotation Algorithm - R U R' U'",
+      image: "https://ruwix.com/pics/solution/3.svg"
+    },
+    {
+      title: "Solve the Middle Layer Edges",
+      description: "The next step is to solve the middle layer edges. You can determine where a piece comes according to the colour of the center pieces which never swap places. Every edge must fit to the side center piece too. See the attached image.",
+      algorithm: "Middle Layer Edge Algorithm - U R U' R' U' F' U F (for right edge)\nU' L' U L U F U' F' (for left edge)",
+      image: "https://ruwix.com/pics/solution/4.svg"
+    },
+    {
+      title: "Solve the Yellow Cross",
+      description: "The next step is to solve the yellow cross. You can determine where a piece comes according to the colour of the center pieces which never swap places. Every edge must fit to the side center piece too. See the attached image.",
+      algorithm: "Yellow Cross Algorithm - F R U R' U' F'",
+      image: "https://ruwix.com/pics/solution/5.svg"
+    },
+    {
+      title: "Orient Yellow Edges",
+      description: "The next step is to orient the yellow edges. You can determine where a piece comes according to the colour of the center pieces which never swap places. Every edge must fit to the side center piece too. See the attached image.",
+      algorithm: "Yellow Edge Orientation Algorithm - R U R' U R U2 R'",
+      image: "https://ruwix.com/pics/solution/6.svg"
+    },
+    {
+      title: "Position Yellow Corners",
+      description: "The next step is to position the yellow corners. You can determine where a piece comes according to the colour of the center pieces which never swap places. Every edge must fit to the side center piece too. See the attached image.",
+      algorithm: "Yellow Corner Permutation Algorithm - U R U' L' U R' U' L",
+      image: "https://ruwix.com/pics/solution/7.svg"
+    },
+    {
+      title: "Orient Yellow Corners",
+      description: "The next step is to orient the yellow corners. You can determine where a piece comes according to the colour of the center pieces which never swap places. Every edge must fit to the side center piece too. See the attached image.",
+      algorithm: "Yellow Corner Orientation Algorithm - R' D' R D",
+      image: "https://ruwix.com/pics/solution/8.svg"
+    }
+  ];
+
+  function initializeSolvedCube() {
+    return {
+      U: Array(9).fill('white'),
+      D: Array(9).fill('yellow'),
+      F: Array(9).fill('blue'),
+      B: Array(9).fill('green'),
+      L: Array(9).fill('orange'),
+      R: Array(9).fill('red')
+    };
+  }
+
+  const handleNextStep = () => {
+    if (currentStep < solvingSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const renderCubeFace = (face) => {
+    return (
+      <div className={`cube-face ${face}`}>
+        {cubeState[face].map((color, index) => (
+          <div key={index} className="cube-sticker" style={{ backgroundColor: color }}></div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderNotation = (notation) => {
+    if (!notation) return null;
+    
+    return notation.split(' ').map((move, i) => (
+      notationImages[move] ? (
+        <img 
+          key={i} 
+          src={notationImages[move]} 
+          alt={move} 
+          className="notation-image"
+          title={move}
+        />
+      ) : (
+        <span key={i} className="notation-text">{move}</span>
+      )
+    ));
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f7f9fb', padding: '2rem 0' }}>
-      <div style={{ maxWidth: 700, margin: '0 auto', background: '#fff', borderRadius: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.08)', padding: '2.5rem 2rem', color: '#333' }}>
-        <button onClick={() => navigate(-1)} style={{ marginBottom: 24, background: '#007bff', color: '#fff', border: 'none', borderRadius: 8, padding: '0.5rem 1.5rem', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>← Back to 3x3 Learning</button>
-        <h1 style={{ color: '#007bff', fontSize: 36, marginBottom: 16, fontWeight: 700 }}>How to Solve a 3x3 Rubik's Cube (Beginner's Method)</h1>
-        <p style={{ fontSize: 18, color: '#555', marginBottom: 32 }}>Follow this step-by-step guide to solve the 3x3 cube, even if you've never solved one before!</p>
+    <div className="rubiks-solver">
+      <style jsx>{`
+        .rubiks-solver {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+          color: #333;
+        }
 
-        {/* English Steps with Images */}
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>Notation</h2>
-          <div style={{ margin: '20px 0', textAlign: 'center' }}>
-            <img src={whiteCrossImg} alt="Cube Notation" style={{ maxWidth: 420, width: '100%', borderRadius: 16, boxShadow: '0 4px 16px rgba(0,0,0,0.10)' }} />
+        header {
+          text-align: center;
+          margin-bottom: 30px;
+          padding: 20px;
+          background: linear-gradient(135deg, #2c3e50, #3498db);
+          color: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+          margin: 0;
+          font-size: 2.5rem;
+        }
+
+        header p {
+          font-size: 1.2rem;
+          opacity: 0.9;
+        }
+
+        .solver-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 30px;
+          margin-bottom: 40px;
+        }
+
+        .cube-display {
+          flex: 1;
+          min-width: 300px;
+          background: #f8f9fa;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .cube-3d {
+          perspective: 1000px;
+          width: 300px;
+          margin: 0 auto;
+        }
+
+        .cube-top, .cube-middle, .cube-bottom {
+          display: flex;
+          justify-content: center;
+        }
+
+        .cube-middle {
+          display: flex;
+          flex-wrap: wrap;
+          width: 300px;
+        }
+
+        .cube-face {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(3, 1fr);
+          gap: 2px;
+          width: 100px;
+          height: 100px;
+          margin: 2px;
+        }
+
+        .cube-sticker {
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: 3px;
+        }
+
+        .solving-steps {
+          flex: 2;
+          min-width: 300px;
+          background: white;
+          padding: 25px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-image img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 5px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          margin: 15px 0;
+        }
+
+        .step-algorithm {
+          background-color: #f8f9fa;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 20px 0;
+          border-left: 4px solid #3498db;
+        }
+
+        .algorithm-notation {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          align-items: center;
+          margin-top: 10px;
+        }
+
+        .notation-image {
+          width: 40px;
+          height: 40px;
+          transition: transform 0.2s;
+        }
+
+        .notation-image:hover {
+          transform: scale(1.2);
+        }
+
+        .notation-text {
+          font-family: monospace;
+          font-size: 1.1rem;
+        }
+
+        .step-navigation {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 20px;
+        }
+
+        .step-navigation button {
+          padding: 12px 24px;
+          background-color: #3498db;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          transition: all 0.2s;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-navigation button:hover {
+          background-color: #2980b9;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-navigation button:disabled {
+          background-color: #95a5a6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        .cube-notation {
+          margin-top: 40px;
+          background: white;
+          padding: 25px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .notation-images {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 20px;
+          margin-top: 20px;
+        }
+
+        .notation-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 10px;
+          background: #f8f9fa;
+          border-radius: 5px;
+          transition: all 0.2s;
+        }
+
+        .notation-item:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .notation-item img {
+          width: 60px;
+          height: 60px;
+          margin-bottom: 5px;
+        }
+
+        .notation-item span {
+          font-weight: bold;
+          font-family: monospace;
+        }
+
+        footer {
+          margin-top: 50px;
+          text-align: center;
+          color: #7f8c8d;
+          font-size: 14px;
+          padding: 20px;
+          border-top: 1px solid #eee;
+        }
+
+        footer a {
+          color: #3498db;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+
+        footer a:hover {
+          color: #2980b9;
+          text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+          .solver-container {
+            flex-direction: column;
+          }
+          
+          .cube-display {
+            margin-bottom: 30px;
+          }
+
+          header h1 {
+            font-size: 2rem;
+          }
+        }
+      `}</style>
+
+      <header>
+        <h1>How to Solve a 3x3 Rubik's Cube</h1>
+        <p>Step-by-step beginner's guide with visual algorithms</p>
+      </header>
+
+      <div className="solver-container">
+        <div className="cube-display">
+          <h2>Cube Visualization</h2>
+          <div className="cube-3d">
+            <div className="cube-top">{renderCubeFace('U')}</div>
+            <div className="cube-middle">
+              {renderCubeFace('L')}
+              {renderCubeFace('F')}
+              {renderCubeFace('R')}
+              {renderCubeFace('B')}
+            </div>
+            <div className="cube-bottom">{renderCubeFace('D')}</div>
           </div>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Before you start, it's important to understand the basic notation used in cube algorithms:
-            <ul style={{ margin: '12px 0 0 18px', color: '#555', fontSize: 15 }}>
-              <li><b>F</b>: Front face</li>
-              <li><b>R</b>: Right face</li>
-              <li><b>U</b>: Up face</li>
-              <li><b>L</b>: Left face</li>
-              <li><b>D</b>: Down face</li>
-              <li><b>'</b> (apostrophe): Counterclockwise turn (e.g., R' means turn the right face counterclockwise)</li>
-              <li>No apostrophe: Clockwise turn</li>
-            </ul>
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>1. White Cross</h2>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Start by making a white cross on the white face. Focus on matching the white edge pieces with the center pieces of the adjacent faces. This step is intuitive—practice moving the white edges into place without worrying about algorithms.
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>2. White Corners</h2>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Next, solve the white corners to complete the first layer. Position a white corner below its correct spot, then use this algorithm until the corner is placed:
-            <br /><b>R U R' U'</b>
-            <br />Repeat as needed for each white corner.
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>3. Second Layer (F2L)</h2>
-          <div style={{ margin: '16px 0' }}>
-            <img src={f2lImg} alt="Second Layer (F2L)" style={{ maxWidth: 300, width: '100%', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
-          </div>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Turn the cube so the solved white face is now on the bottom. Solve the four edge pieces of the middle layer using these algorithms:
-            <ul style={{ margin: '12px 0 0 18px', color: '#555', fontSize: 15 }}>
-              <li><b>For edge on top, no yellow:</b> U R U' R' U' F' U F</li>
-              <li><b>For edge on top, no yellow (left):</b> U' L' U L U F U' F'</li>
-            </ul>
-            If an edge is in the wrong place, use the algorithm to pop it out, then insert it correctly.
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>4. Yellow Cross</h2>
-          <div style={{ margin: '16px 0' }}>
-            <img src={ollImg} alt="Yellow Cross (OLL)" style={{ maxWidth: 300, width: '100%', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
-          </div>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Make a yellow cross on the top face. Use this algorithm:
-            <br /><b>F R U R' U' F'</b>
-            <br />Apply as needed to get from a dot, "L" shape, or line to a cross.
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>5. Yellow Edges</h2>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Position the yellow edge pieces correctly using:
-            <br /><b>R U R' U R U2 R' U</b>
-            <br />You may need to repeat this algorithm to solve all yellow edges.
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>6. Yellow Corners (Permute)</h2>
-          <div style={{ margin: '16px 0' }}>
-            <img src={pllImg} alt="Yellow Corners (PLL)" style={{ maxWidth: 300, width: '100%', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
-          </div>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Move the yellow corners to their correct locations (ignore orientation for now) with:
-            <br /><b>U R U' L' U R' U' L</b>
-            <br />Repeat as needed until all yellow corners are in the right place.
-          </p>
-        </section>
-
-        <section style={{ marginBottom: 32 }}>
-          <h2 style={{ color: '#1976d2', fontSize: 26, marginBottom: 10 }}>7. Orient Yellow Corners</h2>
-          <p style={{ fontSize: 16, color: '#555' }}>
-            Finally, orient the yellow corners to finish the cube. Hold the cube so an unsolved yellow corner is on the front-right-top, then do:
-            <br /><b>R' D' R D</b>
-            <br />Repeat until the corner is oriented, then turn only the top layer to bring another unsolved yellow corner to the front-right-top and repeat. The cube may look scrambled during this step, but it will solve itself as you finish.
-          </p>
-        </section>
-
-        <div style={{ textAlign: 'center', marginTop: 40 }}>
-          <h2 style={{ color: '#28a745', fontWeight: 700, fontSize: 28 }}>Congratulations!</h2>
-          <p style={{ fontSize: 18, color: '#555' }}>You have completed the beginner's method for solving the 3x3 Rubik's Cube!</p>
         </div>
 
-        {/* Malayalam Explanation with Images */}
-        <section style={{ marginTop: 56, background: '#f8f9fa', borderRadius: 14, padding: '2rem 1.5rem', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-          <h2 style={{ color: '#1976d2', fontSize: 24, fontWeight: 800, marginBottom: 18, textAlign: 'center', fontFamily: `'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam', 'Manjari', 'Arial', 'sans-serif'` }}>മലയാളം വിശദീകരണം</h2>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10, fontFamily: `'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam', 'Manjari', 'Arial', 'sans-serif'` }}>നോട്ടേഷൻ</h3>
-            <div style={{ margin: '20px 0', textAlign: 'center' }}>
-              <img src={whiteCrossImg} alt="Cube Notation" style={{ maxWidth: 420, width: '100%', borderRadius: 16, boxShadow: '0 4px 16px rgba(0,0,0,0.10)' }} />
-            </div>
-            <p style={{ fontSize: 16, color: '#333', fontFamily: `'Baloo Chettan 2', 'Anek Malayalam', 'Noto Sans Malayalam', 'Manjari', 'Arial', 'sans-serif'` }}>
-              ക്യൂബിന്റെ ചലനങ്ങൾ സൂചിപ്പിക്കാൻ ചില അക്ഷരങ്ങൾ ഉപയോഗിക്കുന്നു:
-              <ul style={{ margin: '12px 0 0 18px', color: '#555', fontSize: 15 }}>
-                <li><b>F</b>: മുന്നിലെ ഭാഗം</li>
-                <li><b>R</b>: വലത്തുഭാഗം</li>
-                <li><b>U</b>: മുകളിലെ ഭാഗം</li>
-                <li><b>L</b>: ഇടതുഭാഗം</li>
-                <li><b>D</b>: താഴെയുള്ള ഭാഗം</li>
-                <li><b>'</b> (അപ്പോസ്ട്രോഫി): എതിര്‍ദിശയിൽ തിരിക്കുക (ഉദാ: R' = വലത്തുഭാഗം എതിര്‍ദിശയിൽ)</li>
-                <li>അപ്പോസ്ട്രോഫിയില്ലെങ്കിൽ: ക്ലോക്ക്‌വൈസ് തിരിക്കുക</li>
-              </ul>
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>1. വൈറ്റ് ക്രോസ്</h3>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              ആദ്യം വൈറ്റ് കളറിൽ ഒരു ക്രോസ് രൂപപ്പെടുത്തുക. വൈറ്റ് എഡ്ജ് ക്യൂബ് കഷണങ്ങൾ ശരിയായ സ്ഥാനത്തും, അതിന്റെ സൈഡ് കളറുകൾ സെന്റർ കളറുമായി പൊരുത്തപ്പെടുന്ന വിധത്തിൽ ക്രമീകരിക്കുക. ഈ ഘട്ടം ലളിതമാണ്, ആവശ്യമെങ്കിൽ പലതവണ ശ്രമിക്കുക.
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>2. വൈറ്റ് കോർണറുകൾ</h3>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              വൈറ്റ് കോർണർ കഷണങ്ങൾ ശരിയായ സ്ഥാനത്ത് എത്തിക്കുക. കോർണർ കഷണം മുകളിലേക്കു കൊണ്ടുവന്ന്, താഴെ കാണുന്ന ചലനക്രമം ആവർത്തിക്കുക:
-              <br /><b>R U R' U'</b>
-              <br />ഓരോ വൈറ്റ് കോർണറിനും ആവർത്തിക്കുക.
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>3. രണ്ടാം ലെയർ</h3>
-            <div style={{ margin: '16px 0' }}>
-              <img src={f2lImg} alt="Second Layer (F2L)" style={{ maxWidth: 300, width: '100%', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
-            </div>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              വൈറ്റ് ഫേസ് താഴേക്ക് തിരിച്ച്, മധ്യലെയർ എഡ്ജ് കഷണങ്ങൾ ശരിയായ സ്ഥാനത്ത് എത്തിക്കുക. താഴെ കാണുന്ന അൽഗോരിതങ്ങൾ ഉപയോഗിക്കുക:
-              <ul style={{ margin: '12px 0 0 18px', color: '#555', fontSize: 15 }}>
-                <li><b>മുകളിൽ എഡ്ജ്, മഞ്ഞ കളർ ഇല്ല:</b> U R U' R' U' F' U F</li>
-                <li><b>ഇടത് വശത്തേക്ക്:</b> U' L' U L U F U' F'</li>
-              </ul>
-              എഡ്ജ് തെറ്റായ സ്ഥാനത്താണെങ്കിൽ, അൽഗോരിതം ഉപയോഗിച്ച് പുറത്തെടുക്കുക, പിന്നെ ശരിയായി ഇടുക.
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>4. മഞ്ഞ ക്രോസ്</h3>
-            <div style={{ margin: '16px 0' }}>
-              <img src={ollImg} alt="Yellow Cross (OLL)" style={{ maxWidth: 300, width: '100%', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
-            </div>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              മുകളിലെ ഫേസിൽ മഞ്ഞ ക്രോസ് ഉണ്ടാക്കുക. താഴെ കാണുന്ന അൽഗോരിതം ആവർത്തിച്ച് ക്രോസ് രൂപപ്പെടുത്താം:
-              <br /><b>F R U R' U' F'</b>
-              <br />ഡോട്ട്, "L" ആകൃതി, ലൈൻ എന്നിവയിൽ നിന്ന് ക്രോസിലേക്ക് എത്താൻ ആവർത്തിക്കുക.
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>5. മഞ്ഞ എഡ്ജുകൾ</h3>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              മഞ്ഞ എഡ്ജ് കഷണങ്ങൾ ശരിയായ സ്ഥാനത്ത് എത്തിക്കാൻ:
-              <br /><b>R U R' U R U2 R' U</b>
-              <br />ആവശ്യാനുസരണം ആവർത്തിക്കുക.
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>6. മഞ്ഞ കോർണറുകൾ (സ്ഥാനം)</h3>
-            <div style={{ margin: '16px 0' }}>
-              <img src={pllImg} alt="Yellow Corners (PLL)" style={{ maxWidth: 300, width: '100%', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
-            </div>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              മഞ്ഞ കോർണർ കഷണങ്ങൾ ശരിയായ സ്ഥാനത്ത് എത്തിക്കാൻ (ഓറിയന്റേഷൻ വേണ്ട):
-              <br /><b>U R U' L' U R' U' L</b>
-              <br />എല്ലാ കോർണറുകളും ശരിയായ സ്ഥാനത്ത് വരുംവരെ ആവർത്തിക്കുക.
-            </p>
-          </section>
-
-          <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#1976d2', fontSize: 20, marginBottom: 10 }}>7. കോർണർ ഓറിയന്റേഷൻ</h3>
-            <p style={{ fontSize: 16, color: '#333' }}>
-              ഒടുവിൽ, മഞ്ഞ കോർണർ കഷണങ്ങൾ ശരിയായി തിരിക്കാൻ:
-              <br /><b>R' D' R D</b>
-              <br />ഓരോ കോർണറിനും ആവർത്തിക്കുക. ക്യൂബ് മുഴുവൻ തിരിക്കരുത്, മുകളിൽ ലെയർ മാത്രം തിരിക്കുക.
-            </p>
-          </section>
-
-          <div style={{ textAlign: 'center', marginTop: 32 }}>
-            <h3 style={{ color: '#28a745', fontWeight: 700, fontSize: 22 }}>അഭിനന്ദനങ്ങൾ!</h3>
-            <p style={{ color: '#555', fontSize: 16 }}>3x3 ക്യൂബ് പരിഹരിക്കാൻ നിങ്ങൾക്ക് കഴിഞ്ഞു!</p>
+        <div className="solving-steps">
+          <h2>Step {currentStep + 1} of {solvingSteps.length}: {solvingSteps[currentStep].title}</h2>
+          
+          <div className="step-image">
+            <img 
+              src={solvingSteps[currentStep].image} 
+              alt={solvingSteps[currentStep].title}
+            />
           </div>
-        </section>
+          
+          <div className="step-description">
+            <p>{solvingSteps[currentStep].description}</p>
+          </div>
+          
+          <div className="step-algorithm">
+            <h3>Algorithm:</h3>
+            <div className="algorithm-notation">
+              {renderNotation(solvingSteps[currentStep].algorithm)}
+            </div>
+          </div>
+          
+          <div className="step-navigation">
+            <button onClick={handlePrevStep} disabled={currentStep === 0}>
+              ← Previous Step
+            </button>
+            <button 
+              onClick={handleNextStep} 
+              disabled={currentStep === solvingSteps.length - 1}
+            >
+              Next Step →
+            </button>
+          </div>
+        </div>
       </div>
+
+      <div className="cube-notation">
+        <h2>Cube Notation Guide</h2>
+        <p>These are the basic moves used in Rubik's cube algorithms:</p>
+        <div className="notation-images">
+          <img src={NotationImages} alt="All Moves" />
+        </div>
+      </div>
+
+      <footer>
+        <p>All cube notation images courtesy of <a href="https://ruwix.com/" target="_blank" rel="noopener noreferrer">Ruwix - The Rubik's Cube Website</a></p>
+        <p>This guide follows the beginner's layer-by-layer method for solving the 3x3 Rubik's Cube.</p>
+      </footer>
     </div>
   );
 };
