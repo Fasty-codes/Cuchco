@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/images/Rubiks-cube-1.jpg';
-import './Header.css';  
-import { FaCamera, FaLock, FaHome, FaBook, FaUsers, FaTrophy, FaTools, FaThLarge, FaCube, FaChess, FaCode, FaPuzzlePiece, FaBolt, FaFlagCheckered, FaMagic, FaFeather, FaPenNib, FaLaughBeam } from 'react-icons/fa';
+import './Header.css';
+import { FaStore, FaCamera, FaLock, FaHome, FaBook, FaUsers, FaTrophy, FaTools, FaThLarge, FaCube, FaChess, FaCode, FaPuzzlePiece, FaBolt, FaFlagCheckered, FaMagic, FaFeather, FaPenNib, FaLaughBeam } from 'react-icons/fa';
 import { supabase } from '../utils/supabaseClient';
 import RubiksCube1 from '../assets/images/Rubiks-cube-1.jpg';
 import RubiksCube2 from '../assets/images/Rubiks-cube-2.jpg';
@@ -89,27 +89,27 @@ const Header = () => {
         if (!avatarFile || !user) return;
         setUploading(true);
         setFeedback('');
-        
+
         try {
             // Upload to Supabase Storage
             const fileExt = avatarFile.name.split('.').pop();
             const fileName = `${user.username}-${Date.now()}.${fileExt}`;
-            
+
             console.log('Uploading file:', fileName);
             const { data: storageData, error: storageError } = await supabase.storage.from('avatars').upload(fileName, avatarFile, { upsert: true });
-            
+
             if (storageError) {
                 console.error('Storage error:', storageError);
                 setFeedback('Upload failed: ' + storageError.message);
                 setUploading(false);
                 return;
             }
-            
+
             console.log('Upload successful, getting public URL');
             // Get public URL
             const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
             const avatarUrl = publicUrlData.publicUrl;
-            
+
             console.log('Avatar URL:', avatarUrl);
             // Update user profile in localStorage
             updateUserProfile({ avatar: avatarUrl });
@@ -118,7 +118,7 @@ const Header = () => {
             window.location.reload(); // Fastest way to reflect everywhere
         } catch (error) {
             console.error('Upload error:', error);
-            
+
             // Fallback: use data URL if Supabase upload fails
             if (error.message.includes('fetch') || error.message.includes('network')) {
                 console.log('Network error, trying fallback with data URL...');
@@ -127,12 +127,12 @@ const Header = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const img = new Image();
-                    
+
                     img.onload = () => {
                         // Set canvas size to reasonable dimensions (max 150x150)
                         const maxSize = 150;
                         let { width, height } = img;
-                        
+
                         if (width > height) {
                             if (width > maxSize) {
                                 height = (height * maxSize) / width;
@@ -144,17 +144,17 @@ const Header = () => {
                                 height = maxSize;
                             }
                         }
-                        
+
                         canvas.width = width;
                         canvas.height = height;
-                        
+
                         // Draw and compress the image
                         ctx.drawImage(img, 0, 0, width, height);
-                        
+
                         // Convert to data URL with compression (0.6 quality for smaller size)
                         const avatarUrl = canvas.toDataURL('image/jpeg', 0.6);
                         console.log('Using compressed data URL as fallback');
-                        
+
                         // Update user profile in localStorage
                         updateUserProfile({ avatar: avatarUrl });
                         setUploading(false);
@@ -163,12 +163,12 @@ const Header = () => {
                         setTimeout(() => setFeedback(''), 3000);
                         window.location.reload();
                     };
-                    
+
                     img.onerror = () => {
                         setFeedback('Failed to process image');
                         setUploading(false);
                     };
-                    
+
                     // Load the image from the file
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -277,23 +277,23 @@ const Header = () => {
 
     // Helper: nav link style
     const navLinkStyle = {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '10px 18px',
-      color: '#222',
-      fontWeight: 500,
-      fontSize: 18,
-      borderRadius: 10,
-      background: 'none',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'background 0.18s, color 0.18s',
-      textDecoration: 'none',
-      margin: 0,
+        display: 'flex',
+        alignItems: 'center',
+        padding: '5px 10px',
+        color: '#222',
+        fontWeight: 500,
+        fontSize: 18,
+        borderRadius: 10,
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'background 0.18s, color 0.18s',
+        textDecoration: 'none',
+        margin: 0,
     };
     const navLinkHoverStyle = {
-      background: '#e6f0ff',
-      color: '#007bff',
+        background: '#e6f0ff',
+        color: '#007bff',
     };
     // For nav arrow color
     const navArrowDefault = '#b0b8c1'; // soft modern gray
@@ -301,71 +301,88 @@ const Header = () => {
 
     // For mobile subnavs and mega menus, use full-width, fixed panels
     const mobilePanelStyle = {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: '#f7f7f7',
-      zIndex: 3000,
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '5.5rem 1.5rem 2rem 1.5rem',
-      overflowY: 'auto',
-      boxShadow: 'none',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: '#f7f7f7',
+        zIndex: 3000,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '5.5rem 1.5rem 2rem 1.5rem',
+        overflowY: 'auto',
+        boxShadow: 'none',
     };
 
     const mobileNavItemStyle = {
-      display: 'flex',
-      alignItems: 'center',
-      width: '100%',
-      minHeight: 48,
-      padding: '10px 18px',
-      color: '#222',
-      fontWeight: 500,
-      fontSize: 18,
-      borderRadius: 10,
-      background: 'none',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'background 0.18s, color 0.18s',
-      textDecoration: 'none',
-      margin: 0,
-      boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        minHeight: 48,
+        padding: '10px 18px',
+        color: '#222',
+        fontWeight: 500,
+        fontSize: 18,
+        borderRadius: 10,
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'background 0.18s, color 0.18s',
+        textDecoration: 'none',
+        margin: 0,
+        boxSizing: 'border-box',
     };
 
     return (
         <header className="app-header">
             <div className="header-logo">
                 <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 40,
-                  height: 40,
-                  borderRadius: '50%',
-                  background: '#007bff',
-                  color: '#fff',
-                  fontWeight: 800,
-                  fontSize: 26,
-                  marginRight: 12,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: '#007bff',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: 26,
+                    marginRight: 12,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
                 }}
-                className="app-logo-animated"
+                    className="app-logo-animated"
                 >
-                  C
+                    C
                 </span>
-                <Link to="/" style={{ color: '#4CAF50', fontWeight: 700, fontSize: '1.7rem', textDecoration: 'none', letterSpacing: '1px' }} onClick={handleNavClose}>Cuchco</Link>
+                <Link to="/" style={{ color: '#111', fontWeight: 400, fontSize: '1.5rem', textDecoration: 'none', letterSpacing: '1px' }} onClick={handleNavClose}>Cuchco</Link>
             </div>
             <button className="hamburger" aria-label="Toggle navigation" onClick={() => setNavOpen(o => !o)}>
                 <span className="bar"></span>
                 <span className="bar"></span>
                 <span className="bar"></span>
             </button>
-            <nav className={`header-nav${navOpen && isMobile() ? ' open' : ''}`} style={{ flex: 1, background: '#f7f7f7' }}>
-                <ul style={{ display: 'flex', alignItems: 'center', gap: 32, justifyContent: 'center', margin: 0, padding: 0, listStyle: 'none', background: '#f7f7f7' }}>
+            <nav className={`header-nav${navOpen && isMobile() ? ' open' : ''}`} style={{
+                flex: 1,
+                maxWidth: 'fit-content', // Add this to make container fit content
+                margin: '0 auto' // Center the nav
+            }}>
+                <ul style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 24, // Reduced gap
+                    justifyContent: 'center',
+                    margin: 0,
+                    padding: '4px 16px', // Added padding
+                    listStyle: 'none',
+                    border: '1px solid rgba(0,0,0,0.1)', // Lighter border
+                    borderRadius: 50,
+                    background: 'rgba(255,255,255,0.7)', // Slightly transparent
+                    backdropFilter: 'blur(10px)', // Subtle blur
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)' // Soft shadow
+                }}>
                     <li><Link to="/" onClick={handleNavClose} style={mobileNavItemStyle}>
-                        <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaHome style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Home</span>
+                        <span style={{ display: 'flex', alignItems: 'center', flex: 1, fontSize: 18, fontWeight: 200 }}><FaHome style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Home</span>
                     </Link></li>
                     {/* Learn Dropdown */}
                     <li style={{ position: 'relative' }}>
@@ -375,27 +392,27 @@ const Header = () => {
                                     <div className="mobile-subnav" style={mobilePanelStyle}>
                                         <button onClick={() => setMobileSubNav(null)} style={{ marginBottom: 24, background: 'none', border: 'none', color: '#007bff', fontWeight: 700, fontSize: 22, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8, padding: '0.5rem 0' }}>&larr; Back</button>
                                         <h3 style={{ fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Learn</h3>
-                                        <Link to="/learn" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaBook style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Learn</Link>
+                                        <Link to="/learn" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaBook style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Learn</Link>
                                         <button onClick={() => setMobileCubingSubNav(true)} style={mobileNavItemStyle}
                                             onMouseOver={e => { e.currentTarget.querySelector('span.arrow').style.color = navArrowHover; }}
                                             onMouseOut={e => { e.currentTarget.querySelector('span.arrow').style.color = navArrowDefault; }}
                                         >
-                                            <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Cubing</span>
+                                            <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaCube style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Cubing</span>
                                             <span className="arrow" style={{ fontSize: 28, fontWeight: 700, color: navArrowDefault, marginLeft: 10, display: 'flex', alignItems: 'center', lineHeight: 1 }}>{'>'}</span>
                                         </button>
-                                        <Link to="/learn/chess" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaChess style={{ color: '#a020f0', fontSize: 22, marginRight: 10 }} />Chess</Link>
-                                        <Link to="/learn/coding" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaCode style={{ color: '#28a745', fontSize: 22, marginRight: 10 }} />Coding</Link>
-                                        <Link to="/learn/cbse10" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaBook style={{ color: '#ff9800', fontSize: 22, marginRight: 10 }} />CBSE 10th</Link>
+                                        <Link to="/learn/chess" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaChess style={{ color: '#a020f0', fontSize: 15, marginRight: 10 }} />Chess</Link>
+                                        <Link to="/learn/coding" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaCode style={{ color: '#28a745', fontSize: 15, marginRight: 10 }} />Coding</Link>
+                                        <Link to="/learn/cbse10" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaBook style={{ color: '#ff9800', fontSize: 15, marginRight: 10 }} />CBSE 10th</Link>
                                     </div>
                                 ) : (
                                     <div className="mobile-subnav" style={mobilePanelStyle}>
                                         <button onClick={() => setMobileCubingSubNav(false)} style={{ marginBottom: 24, background: 'none', border: 'none', color: '#007bff', fontWeight: 700, fontSize: 22, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8, padding: '0.5rem 0' }}>&larr; Back</button>
                                         <h3 style={{ fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Cubing</h3>
-                                        <Link to="/learn/cubing" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Cubing</Link>
-                                        <Link to="/learn/cubing/2x2" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />2x2 Cube</Link>
-                                        <Link to="/learn/cubing/3x3" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />3x3 Cube</Link>
-                                        <Link to="/learn/cubing/4x4" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />4x4 Cube</Link>
-                                        <Link to="/learn/cubing/pyraminx" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Pyraminx</Link>
+                                        <Link to="/learn/cubing" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Cubing</Link>
+                                        <Link to="/learn/cubing/2x2" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />2x2 Cube</Link>
+                                        <Link to="/learn/cubing/3x3" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />3x3 Cube</Link>
+                                        <Link to="/learn/cubing/4x4" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />4x4 Cube</Link>
+                                        <Link to="/learn/cubing/pyraminx" onClick={() => { setMobileSubNav(null); setMobileCubingSubNav(false); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Pyraminx</Link>
                                     </div>
                                 )
                             ) : (
@@ -422,12 +439,12 @@ const Header = () => {
                                     className="nav-mega-btn"
                                     aria-haspopup="true"
                                     aria-expanded={openMega === 'Learn'}
-                                    style={navLinkStyle}
+                                    style={{ ...navLinkStyle, fontSize: 18, fontWeight: 200 }}
                                     onMouseOver={e => { e.currentTarget.style.background = '#e6f0ff'; e.currentTarget.style.color = navArrowHover; e.currentTarget.querySelector('span').style.color = navArrowHover; }}
                                     onMouseOut={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#222'; e.currentTarget.querySelector('span').style.color = navArrowDefault; }}
                                     onClick={() => setOpenMega(openMega === 'Learn' ? null : 'Learn')}
                                 >
-                                    Learn <span style={{ fontSize: 28, fontWeight: 700, marginLeft: 4, color: navArrowDefault, transition: 'color 0.18s' }}>{'>'}</span>
+                                    Learn <span style={{ fontSize: 20, fontWeight: 500, marginLeft: 4, color: navArrowDefault, transition: 'color 0.18s' }}>{'>'}</span>
                                 </button>
                                 {openMega === 'Learn' && (
                                     <div
@@ -481,14 +498,23 @@ const Header = () => {
                             </div>
                         )}
                     </li>
+                    <li><Link to="/store" onClick={handleNavClose} style={mobileNavItemStyle}>
+                        <span style={{ display: 'flex', alignItems: 'center', flex: 1, fontSize: 18, fontWeight: 200 }}><FaStore style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Store</span>
+                    </Link></li>
+                    <li><Link to="/community" onClick={handleNavClose} style={mobileNavItemStyle}>
+                        <span style={{ display: 'flex', alignItems: 'center', flex: 1, fontSize: 18, fontWeight: 200 }}><FaUsers style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Community</span>
+                    </Link></li>
+                    <li><Link to="/leaderboard" onClick={handleNavClose} style={mobileNavItemStyle}>
+                        <span style={{ display: 'flex', alignItems: 'center', flex: 1, fontSize: 18, fontWeight: 200 }}><FaTrophy style={{ color: '#007bff', fontSize: 15, marginRight: 10 }} />Leaderboard</span>
+                    </Link></li>
                     {/* Tools Dropdown */}
                     <li style={{ position: 'relative' }}>
                         {isMobile() ? (
                             mobileSubNav === 'Tools' ? (
                                 <div className="mobile-subnav" style={mobilePanelStyle}>
                                     <button onClick={() => setMobileSubNav(null)} style={{ marginBottom: 24, background: 'none', border: 'none', color: '#007bff', fontWeight: 700, fontSize: 22, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8, padding: '0.5rem 0' }}>&larr; Back</button>
-                                    <h3 style={{ fontWeight: 700, fontSize: 22, marginBottom: 18 }}>Tools</h3>
-                                    <Link to="/tools" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaThLarge style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Tools</Link>
+                                    <h3 style={{ fontWeight: 700, fontSize: 22, marginBottom: 18 }}>More</h3>
+                                    <Link to="/tools" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaThLarge style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />More</Link>
                                     <Link to="/timer" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaFlagCheckered style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Timer</Link>
                                     <Link to="/scramble-gen" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaPuzzlePiece style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Scramble Gen</Link>
                                     <Link to="/solver-3x3" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />3x3 Solver</Link>
@@ -496,6 +522,7 @@ const Header = () => {
                                     <Link to="/story-ai" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaMagic style={{ color: '#ff69b4', fontSize: 22, marginRight: 10 }} />Storywriting AI</Link>
                                     <Link to="/poem-gen" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaFeather style={{ color: '#0288d1', fontSize: 22, marginRight: 10 }} />Poem Generator</Link>
                                     <Link to="/story" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaBook style={{ color: '#0288d1', fontSize: 22, marginRight: 10 }} />Story</Link>
+                                    <Link to="/css-library" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaCode style={{ color: '#0288d1', fontSize: 22, marginRight: 10 }} />Css Library</Link>
                                 </div>
                             ) : (
                                 <button
@@ -507,7 +534,7 @@ const Header = () => {
                                     onMouseOver={e => { e.currentTarget.style.background = '#e6f0ff'; e.currentTarget.style.color = navArrowHover; e.currentTarget.querySelector('span.arrow').style.color = navArrowHover; }}
                                     onMouseOut={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#222'; e.currentTarget.querySelector('span.arrow').style.color = navArrowDefault; }}
                                 >
-                                    <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaThLarge style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Tools</span>
+                                    <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaThLarge style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />More</span>
                                     <span className="arrow" style={{ fontSize: 28, fontWeight: 700, color: navArrowDefault, marginLeft: 10, display: 'flex', alignItems: 'center', lineHeight: 1 }}>{'>'}</span>
                                 </button>
                             )
@@ -521,12 +548,12 @@ const Header = () => {
                                     className="nav-mega-btn"
                                     aria-haspopup="true"
                                     aria-expanded={openMega === 'Tools'}
-                                    style={navLinkStyle}
+                                    style={{ ...navLinkStyle, fontSize: 18, fontWeight: 200 }}
                                     onMouseOver={e => { e.currentTarget.style.background = '#e6f0ff'; e.currentTarget.style.color = navArrowHover; e.currentTarget.querySelector('span').style.color = navArrowHover; }}
                                     onMouseOut={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#222'; e.currentTarget.querySelector('span').style.color = navArrowDefault; }}
                                     onClick={() => setOpenMega(openMega === 'Tools' ? null : 'Tools')}
                                 >
-                                    Tools <span style={{ fontSize: 28, fontWeight: 700, marginLeft: 4, color: navArrowDefault, transition: 'color 0.18s' }}>{'>'}</span>
+                                    More <span style={{ fontSize: 20, fontWeight: 500, marginLeft: 4, color: navArrowDefault, transition: 'color 0.18s' }}>{'>'}</span>
                                 </button>
                                 {openMega === 'Tools' && (
                                     <div
@@ -555,7 +582,7 @@ const Header = () => {
                                         <div className="mega-menu-columns" style={{ display: 'flex', flexDirection: 'row', gap: 32, width: '100%' }}>
                                             <div className="mega-menu-column" style={{ minWidth: 180, flex: 1 }}>
                                                 <h4 style={{ color: '#007bff', fontWeight: 700, fontSize: '1.1rem', marginBottom: 12 }}>Cubing Tools</h4>
-                                                <Link to="/tools" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaThLarge style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Tools</Link>
+                                                <Link to="/tools" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaThLarge style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />More</Link>
                                                 <Link to="/timer" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaFlagCheckered style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Timer</Link>
                                                 <Link to="/scramble-gen" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaPuzzlePiece style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Scramble Gen</Link>
                                                 <Link to="/solver-3x3" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaCube style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />3x3 Solver</Link>
@@ -564,9 +591,14 @@ const Header = () => {
                                                 <h4 style={{ color: '#a020f0', fontWeight: 700, fontSize: '1.1rem', marginBottom: 12 }}>Chess Tools</h4>
                                                 <Link to="/play-chess" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaChess style={{ color: '#a020f0', fontSize: 22, marginRight: 10 }} />Chess Sim</Link>
                                                 <Link to="/timer" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaFlagCheckered style={{ color: '#a020f0', fontSize: 22, marginRight: 10 }} />Timer</Link>
-                                                <Link to="/story-ai" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaMagic style={{ color: '#ff69b4', fontSize: 22, marginRight: 10 }} />Storywriting AI</Link>
-                                                <Link to="/poem-gen" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaFeather style={{ color: '#0288d1', fontSize: 22, marginRight: 10 }} />Poem Generator</Link>
-                                                <Link to="/story" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaBook style={{ color: '#0288d1', fontSize: 22, marginRight: 10 }} />Stories</Link>
+                                            </div>
+                                            <div className="mega-menu-column" style={{ minWidth: 180, flex: 1 }}>
+                                                <h4 style={{ color: '#F54927', fontWeight: 700, fontSize: '1.1rem', marginBottom: 12 }}>Others</h4>
+                                                <Link to="/story" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaBook style={{ color: '#F54927', fontSize: 22, marginRight: 10 }} />Stories</Link>
+                                                <Link to="/fun-zone" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaLaughBeam style={{ color: '#F54927', fontSize: 22, marginRight: 10 }} />Fun Zone</Link>
+                                                <Link to="/story-ai" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaMagic style={{ color: '#F54927', fontSize: 22, marginRight: 10 }} />Storywriting AI</Link>
+                                                <Link to="/poem-gen" onClick={() => { setOpenMega(null); handleNavClose(); }} style={navLinkStyle}><FaFeather style={{ color: '#F54927', fontSize: 22, marginRight: 10 }} />Poem Generator</Link>
+                                                <Link to="/css-library" onClick={() => { setMobileSubNav(null); handleNavClose(); }} style={mobileNavItemStyle}><FaCode style={{ color: '#F54927', fontSize: 22, marginRight: 10 }} />Css Library</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -574,17 +606,6 @@ const Header = () => {
                             </div>
                         )}
                     </li>
-                    <li>
-                      <Link to="/fun-zone" onClick={handleNavClose} style={mobileNavItemStyle}>
-                        <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaLaughBeam style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Fun</span>
-                      </Link>
-                    </li>
-                    <li><Link to="/community" onClick={handleNavClose} style={mobileNavItemStyle}>
-                        <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaUsers style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Community</span>
-                    </Link></li>
-                    <li><Link to="/leaderboard" onClick={handleNavClose} style={mobileNavItemStyle}>
-                        <span style={{ display: 'flex', alignItems: 'center', flex: 1 }}><FaTrophy style={{ color: '#007bff', fontSize: 22, marginRight: 10 }} />Leaderboard</span>
-                    </Link></li>
                 </ul>
             </nav>
             <div className={`header-auth${navOpen && isMobile() ? ' open' : ''}`}>

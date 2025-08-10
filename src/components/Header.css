@@ -3,10 +3,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background: #fff; /* Solid background */
-    box-shadow: 0 4px 32px 0 rgba(0,0,0,0.12);
-    border-bottom: 1.5px solid rgba(76,175,80,0.13);
-    transition: background 0.3s, box-shadow 0.3s;
     position: sticky;
     top: 0;
     z-index: 1000;
